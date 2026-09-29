@@ -304,7 +304,7 @@ function col(label, doneH, targetH, doneKm, targetKm, expectH) {
   return `
     <div class="col">
       <div class="label">${label}</div>
-      <div class="primary">${fmtH(doneH)} of ${fmtH(targetH)} h</div>
+      <div class="primary">${fmtH(doneH)}/${fmtH(targetH)}h</div>
       <div class="bar">
         <div class="fill" style="width:${pct}%"></div>
         <div class="expect" style="left:${expPct}%" title="Where plan says you should be"></div>
