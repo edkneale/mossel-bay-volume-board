@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Mossel Bay">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#F5F2ED">
+<title>Mossel Bay · volume</title>
+<link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Mossel%20Bay%20volume%22,%22short_name%22:%22Mossel%20Bay%22,%22display%22:%22standalone%22,%22background_color%22:%22%23F5F2ED%22,%22theme_color%22:%22%23F5F2ED%22,%22start_url%22:%22.%22}">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%23F5F2ED'/%3E%3Crect x='28' y='28' width='124' height='124' rx='24' fill='%23fff'/%3E%3Ctext x='90' y='108' text-anchor='middle' font-family='system-ui,sans-serif' font-size='52' font-weight='700' fill='%231a1a1a'%3EM%3C/text%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #F5F2ED;
+    --card: #ffffff;
+    --ink: #1a1a1a;
+    --muted: #8a867f;
+    --bar: #e8e4dc;
+    --fill: #1a1a1a;
+    --expect: #c4b8a8;
+    --safe: env(safe-area-inset-top, 0px);
+    --safe-b: env(safe-area-inset-bottom, 0px);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+    min-height: 100%;
+    min-height: 100dvh;
+  }
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    padding: calc(20px + var(--safe)) 16px calc(24px + var(--safe-b));
+  }
+  .wrap { width: 100%; max-width: 560px; margin: 0 auto; }
+  .header {
+    font-size: 13px;
+    font-weight: 500;
+    color: #3a3a3a;
+    letter-spacing: -0.01em;
+    margin: 0 0 14px 4px;
+  }
+  .card {
+    background: var(--card);
+    border-radius: 20px;
+    box-shadow: 0 8px 28px rgba(40, 30, 20, 0.08), 0 1px 2px rgba(40,30,20,0.04);
+    padding: 22px 8px 18px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+  }
+  .col {
+    padding: 0 14px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .col + .col::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 6px; bottom: 6px;
+    width: 1px;
+    background: #ebe7df;
+  }
+  .label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: 0.01em;
+  }
+  .primary {
+    font-size: clamp(20px, 5.6vw, 26px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    color: var(--ink);
+  }
+  .bar {
+    height: 8px;
+    border-radius: 999px;
+    background: var(--bar);
+    position: relative;
+    overflow: hidden;
+    margin-top: 2px;
+  }
+  .fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    background: var(--fill);
+    transition: width 0.5s ease;
+  }
+  .expect {
+    position: absolute;
+    top: -2px; bottom: -2px;
+    width: 2px;
+    background: var(--expect);
+    border-radius: 1px;
+    transform: translateX(-50%);
+    opacity: 0.9;
+  }
+  .secondary {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 450;
+  }
+  .meta {
+    margin-top: 18px;
+    padding: 0 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .meta strong { color: #3a3a3a; font-weight: 600; }
+  .pace {
+    margin-top: 10px;
+    padding: 12px 14px;
+    background: rgba(255,255,255,0.55);
+    border-radius: 14px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.45;
+  }
+  .pace b { color: #3a3a3a; font-weight: 600; }
+  .edit {
+    margin-top: 16px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-size: 12px;
+    padding: 8px;
+    align-self: center;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .panel {
+    display: none;
+    margin-top: 12px;
+    background: var(--card);
+    border-radius: 16px;
+    padding: 14px;
+    box-shadow: 0 4px 16px rgba(40,30,20,0.06);
+  }
+  .panel.open { display: block; }
+  .panel h2 {
+    margin: 0 0 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #3a3a3a;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 52px 1fr 1fr;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .row label { font-size: 12px; color: var(--muted); }
+  .row input {
+    width: 100%;
+    font-size: 16px; /* iOS zoom prevent */
+    padding: 8px 10px;
+    border: 1px solid #e5e1d8;
+    border-radius: 10px;
+    background: #faf9f6;
+    color: var(--ink);
+  }
+  .actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .actions button {
+    flex: 1;
+    border: none;
+    border-radius: 12px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-save { background: var(--ink); color: #fff; }
+  .btn-reset { background: #ebe7df; color: #3a3a3a; }
+  .hint {
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header" id="header">Mossel Bay · volume · 22 Nov · clock from 26 Sep</div>
+    <div class="card" id="card" aria-live="polite"></div>
+    <div class="meta">
+      <span><strong id="daysLeft">—</strong> days to race</span>
+      <span>updated <strong id="updated">—</strong></span>
+    </div>
+    <div class="pace" id="pace"></div>
+    <button class="edit" type="button" id="toggleEdit">Log actuals</button>
+    <div class="panel" id="panel">
+      <h2>Done so far (clock from 26 Sep)</h2>
+      <div class="row"><label>Swim</label><input id="sH" inputmode="decimal" placeholder="h"><input id="sK" inputmode="decimal" placeholder="km"></div>
+      <div class="row"><label>Bike</label><input id="bH" inputmode="decimal" placeholder="h"><input id="bK" inputmode="decimal" placeholder="km"></div>
+      <div class="row"><label>Run</label><input id="rH" inputmode="decimal" placeholder="h"><input id="rK" inputmode="decimal" placeholder="km"></div>
+      <div class="actions">
+        <button type="button" class="btn-reset" id="reset">Reset 0</button>
+        <button type="button" class="btn-save" id="save">Save</button>
+      </div>
+      <p class="hint">Saved on this phone only. Coach can refresh the file when the SoT updates.</p>
+    </div>
+  </div>
+<script>
+/* ===== SoT — Coach updates these targets / milestones ===== */
+const PLAN = {
+  race: "2026-11-22",
+  clockFrom: "2026-09-26",
+  targets: {
+    swim: { h: 14, km: 28 },
+    bike: { h: 36, km: 936 },
+    run:  { h: 21.5, km: 215 }
+  },
+  /* Saturday milestones: cumulative hours */
+  milestones: [
+    { d: "2026-09-26", s: 0,   b: 0,   r: 0 },
+    { d: "2026-10-03", s: 0.5, b: 2,   r: 1.5 },
+    { d: "2026-10-10", s: 2.5, b: 7,   r: 4.5 },
+    { d: "2026-10-17", s: 4.5, b: 12,  r: 7.5 },
+    { d: "2026-10-24", s: 7,   b: 18,  r: 11 },
+    { d: "2026-10-31", s: 9.5, b: 24,  r: 14.5 },
+    { d: "2026-11-07", s: 11.5,b: 29.5,r: 17.5 },
+    { d: "2026-11-14", s: 13,  b: 33.5,r: 20 },
+    { d: "2026-11-22", s: 14,  b: 36,  r: 21.5 }
+  ],
+  /* Seed actuals (Coach SoT). localStorage overrides if present. */
+  actuals: { swimH: 0, swimKm: 0, bikeH: 0, bikeKm: 0, runH: 1.8, runKm: 19.03, updated: "2026-09-28" }
+};
+
+const KEY = "mossel-bay-volume-v1";
+
+function parseDay(s) {
+  const [y,m,d] = s.split("-").map(Number);
+  return Date.UTC(y, m - 1, d);
+}
+function todayUTC() {
+  const n = new Date();
+  return Date.UTC(n.getFullYear(), n.getMonth(), n.getDate());
+}
+function fmtH(n) {
+  if (Number.isInteger(n)) return String(n);
+  return (Math.round(n * 10) / 10).toString();
+}
+function fmtKm(n) {
+  if (Number.isInteger(n)) return String(n);
+  return (Math.round(n * 10) / 10).toString();
+}
+function loadActuals() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) return { ...PLAN.actuals, ...JSON.parse(raw) };
+  } catch (e) {}
+  return { ...PLAN.actuals };
+}
+function saveActuals(a) {
+  localStorage.setItem(KEY, JSON.stringify(a));
+}
+function expectedHours(t) {
+  const ms = PLAN.milestones;
+  if (t <= parseDay(ms[0].d)) return { s: 0, b: 0, r: 0 };
+  if (t >= parseDay(ms[ms.length - 1].d)) {
+    const last = ms[ms.length - 1];
+    return { s: last.s, b: last.b, r: last.r };
+  }
+  for (let i = 0; i < ms.length - 1; i++) {
+    const a = ms[i], b = ms[i + 1];
+    const ta = parseDay(a.d), tb = parseDay(b.d);
+    if (t >= ta && t <= tb) {
+      const f = (t - ta) / (tb - ta);
+      return {
+        s: a.s + (b.s - a.s) * f,
+        b: a.b + (b.b - a.b) * f,
+        r: a.r + (b.r - a.r) * f
+      };
+    }
+  }
+  return { s: 0, b: 0, r: 0 };
+}
+function col(label, doneH, targetH, doneKm, targetKm, expectH) {
+  const pct = Math.min(100, (doneH / targetH) * 100);
+  const expPct = Math.min(100, (expectH / targetH) * 100);
+  return `
+    <div class="col">
+      <div class="label">${label}</div>
+      <div class="primary">${fmtH(doneH)} of ${fmtH(targetH)} h</div>
+      <div class="bar">
+        <div class="fill" style="width:${pct}%"></div>
+        <div class="expect" style="left:${expPct}%" title="Where plan says you should be"></div>
+      </div>
+      <div class="secondary">${fmtKm(doneKm)} / ${fmtKm(targetKm)} km</div>
+    </div>`;
+}
+function render() {
+  const a = loadActuals();
+  const t = todayUTC();
+  const exp = expectedHours(t);
+  const days = Math.max(0, Math.round((parseDay(PLAN.race) - t) / 86400000));
+  document.getElementById("daysLeft").textContent = days;
+  document.getElementById("updated").textContent = a.updated || "—";
+  document.getElementById("card").innerHTML =
+    col("Swim", a.swimH, PLAN.targets.swim.h, a.swimKm, PLAN.targets.swim.km, exp.s) +
+    col("Bike", a.bikeH, PLAN.targets.bike.h, a.bikeKm, PLAN.targets.bike.km, exp.b) +
+    col("Run",  a.runH,  PLAN.targets.run.h,  a.runKm,  PLAN.targets.run.km,  exp.r);
+
+  const gaps = [
+    ["Swim", a.swimH - exp.s],
+    ["Bike", a.bikeH - exp.b],
+    ["Run",  a.runH  - exp.r]
+  ].map(([n, g]) => {
+    const abs = Math.abs(g);
+    if (abs < 0.05) return `<b>${n}</b> on plan`;
+    return g < 0
+      ? `<b>${n}</b> ${fmtH(abs)} h under expected`
+      : `<b>${n}</b> ${fmtH(abs)} h ahead`;
+  });
+  document.getElementById("pace").innerHTML =
+    `Grey tick on each bar = where the plan says you should be today. ${gaps.join(" · ")}.`;
+
+  document.getElementById("sH").value = a.swimH;
+  document.getElementById("sK").value = a.swimKm;
+  document.getElementById("bH").value = a.bikeH;
+  document.getElementById("bK").value = a.bikeKm;
+  document.getElementById("rH").value = a.runH;
+  document.getElementById("rK").value = a.runKm;
+}
+document.getElementById("toggleEdit").onclick = () => {
+  document.getElementById("panel").classList.toggle("open");
+};
+document.getElementById("save").onclick = () => {
+  const num = (id) => {
+    const v = parseFloat(document.getElementById(id).value);
+    return Number.isFinite(v) ? v : 0;
+  };
+  const today = new Date();
+  const stamp = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}-${String(today.getDate()).padStart(2,"0")}`;
+  saveActuals({
+    swimH: num("sH"), swimKm: num("sK"),
+    bikeH: num("bH"), bikeKm: num("bK"),
+    runH: num("rH"), runKm: num("rK"),
+    updated: stamp
+  });
+  document.getElementById("panel").classList.remove("open");
+  render();
+};
+document.getElementById("reset").onclick = () => {
+  saveActuals({ swimH:0,swimKm:0,bikeH:0,bikeKm:0,runH:0,runKm:0, updated: PLAN.actuals.updated });
+  render();
+};
+render();
+</script>
+</body>
+</html>
