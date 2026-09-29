@@ -40,6 +40,14 @@
     padding: calc(20px + var(--safe)) 16px calc(24px + var(--safe-b));
   }
   .wrap { width: 100%; max-width: 560px; margin: 0 auto; }
+  .title {
+    font-size: clamp(22px, 6vw, 28px);
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    color: var(--ink);
+    margin: 0 0 4px 4px;
+    line-height: 1.15;
+  }
   .header {
     font-size: 13px;
     font-weight: 500;
@@ -203,7 +211,8 @@
 </head>
 <body>
   <div class="wrap">
-    <div class="header" id="header">Mossel Bay · volume · 22 Nov · clock from 26 Sep</div>
+    <h1 class="title">Mossel Bay</h1>
+    <div class="header" id="header">70.3 volume · 22 Nov · clock from 26 Sep</div>
     <div class="card" id="card" aria-live="polite"></div>
     <div class="meta">
       <span><strong id="daysLeft">—</strong> days to race</span>
